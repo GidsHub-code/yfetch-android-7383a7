@@ -25,10 +25,16 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 public class MainActivity extends AppCompatActivity {
     private WebView webView;
     private SwipeRefreshLayout refreshLayout;
+    private AdView adView;
+
+    private static final String BANNER_AD_UNIT_ID = "ca-app-pub-9769231127538087/6516654492";
     private ValueCallback<Uri[]> fileChooserCallback;
     private ActivityResultLauncher<Intent> fileChooserLauncher;
     private PermissionRequest pendingWebPermissionRequest;
@@ -69,8 +75,7 @@ public class MainActivity extends AppCompatActivity {
         createNotificationChannel();
         requestRuntimePermissions();
         registerFileChooser();
-
-
+        initBannerAd();
 
         WebSettings s = webView.getSettings();
         s.setJavaScriptEnabled(true);
@@ -210,6 +215,30 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
+   /**
+     * Sets up an adaptive banner: initializes the Mobile Ads SDK, computes the
+     * correct banner size for this screen width, then loads and displays it in
+     * the AdView already sitting in activity_main.xml.
+     */
+    private void initBannerAd() {
+        adView = findViewById(R.id.adView);
+        if (adView == null) return;
+
+        MobileAds.initialize(this, initializationStatus -> {
+            adView.setAdUnitId(BANNER_AD_UNIT_ID);
+            adView.setAdSize(getAdaptiveBannerSize());
+            adView.loadAd(new AdRequest.Builder().build());
+        });
+    }
+
+    /** Anchored adaptive banner sized to the current screen width. */
+     private AdSize getAdaptiveBannerSize() {
+        android.util.DisplayMetrics outMetrics = getResources().getDisplayMetrics();
+        float widthPixels = outMetrics.widthPixels;
+        int adWidth = (int) (widthPixels / outMetrics.density);
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth);
+    }
+    
     private void registerFileChooser() {
         fileChooserLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -271,6 +300,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         webView.saveState(outState);
+    }
+    @Override
+    protected void onPause() {
+        if (adView != null) adView.pause();
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (adView != null) adView.resume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (adView != null) adView.destroy();
+        super.onDestroy();
     }
 
     @Override
