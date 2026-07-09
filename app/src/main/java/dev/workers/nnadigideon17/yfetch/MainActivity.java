@@ -224,9 +224,14 @@ public class MainActivity extends AppCompatActivity {
         adView = findViewById(R.id.adView);
         if (adView == null) return;
 
+        // Must be set synchronously, before this method returns, so the AdView
+        // already has a size by the time Android lays it out. MobileAds.initialize()
+        // is async and can finish after that first layout pass — setting the size
+        // inside its callback is what was causing the "adSize was missing" crash.
+        adView.setAdUnitId(BANNER_AD_UNIT_ID);
+        adView.setAdSize(getAdaptiveBannerSize());
+
         MobileAds.initialize(this, initializationStatus -> {
-            adView.setAdUnitId(BANNER_AD_UNIT_ID);
-            adView.setAdSize(getAdaptiveBannerSize());
             adView.loadAd(new AdRequest.Builder().build());
         });
     }
