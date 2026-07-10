@@ -24,7 +24,7 @@ android {
         manifestPlaceholders = [
             hostName: "yfetch.nnadigideon17.workers.dev",
             defaultUrl: "https://yfetch.nnadigideon17.workers.dev/",
-            admobAppId: "ca-app-pub-9769231127538087~2956004817"
+            admobAppId: ""
         ]
     }
 
@@ -79,6 +79,4 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:33.5.1')
     implementation 'com.google.firebase:firebase-messaging'
 
-    // Google AdMob (banner ads)
-    implementation 'com.google.android.gms:play-services-ads:23.6.0'
 }
