@@ -29,6 +29,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 public class MainActivity extends AppCompatActivity {
     private WebView webView;
     private SwipeRefreshLayout refreshLayout;
+    // admob disabled
     private ValueCallback<Uri[]> fileChooserCallback;
     private ActivityResultLauncher<Intent> fileChooserLauncher;
     private PermissionRequest pendingWebPermissionRequest;
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         createNotificationChannel();
         requestRuntimePermissions();
         registerFileChooser();
+
 
 
 
@@ -272,6 +274,10 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         webView.saveState(outState);
     }
+
+    // admob lifecycle disabled
+
+
 
     @Override
     public void onBackPressed() {
